@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('检查管理员账号...');
   
-  // 检查是否已有管理员
+  // 检查是否已有管理员教师
   const existingAdmin = await prisma.user.findFirst({
-    where: { role: 'admin' }
+    where: { isAdmin: true }
   });
   
   if (existingAdmin) {
@@ -16,21 +16,24 @@ async function main() {
     return;
   }
   
-  // 创建管理员账号
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  // 创建管理员教师账号
+  const hashedPassword = await bcrypt.hash('teacher123', 10);
   
   const admin = await prisma.user.create({
     data: {
-      username: 'admin',
+      username: 'teacher1',
       password: hashedPassword,
-      role: 'admin',
-      balance: 9999
+      role: 'teacher',
+      isAdmin: true,
+      balance: 9999,
+      dailyQuota: 999
     }
   });
   
-  console.log('✅ 管理员账号创建成功！');
-  console.log('   用户名: admin');
-  console.log('   密码: admin123');
+  console.log('✅ 管理员教师账号创建成功！');
+  console.log('   用户名: teacher1');
+  console.log('   密码: teacher123');
+  console.log('   角色: 教师(管理员)');
   console.log('   请登录后立即修改密码！');
 }
 
