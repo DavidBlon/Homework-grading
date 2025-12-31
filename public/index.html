@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业批改系统 - 首页</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 毛玻璃页头 -->
+    <header class="glass-header">
+        <div class="header-content">
+            <button id="logoutBtn" class="logout-btn" style="display: none;">
+                <span>← 登出</span>
+            </button>
+            <div class="header-title">
+                <h1>📝 <span class="title-short">智能批改</span><span class="title-full">智能作业批改系统</span></h1>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="usernameDisplay"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <main class="main-content">
+            <div class="brand-logo">
+                <svg class="logo-svg" viewBox="0 0 145 80" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 渐变定义 -->
+                    <defs>
+                        <linearGradient id="gradientD" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#60a5fa;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#93c5fd;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="gradientB" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#a78bfa;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#c4b5fd;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- D字母，半包围结构 -->
+                    <path class="letter-d" d="M 10 10 L 10 70 L 45 70 C 65 70 75 60 75 40 C 75 20 65 10 45 10 Z M 25 25 L 42 25 C 52 25 57 30 57 40 C 57 50 52 55 42 55 L 25 55 Z" />
+                    <!-- B字母，嵌入D的右侧，共享边界 -->
+                    <path class="letter-b" d="M 65 20 L 65 70 L 95 70 C 108 70 115 65 115 57 C 115 52 112 48 108 47 C 112 45 114 41 114 36 C 114 28 107 20 95 20 Z M 78 30 L 92 30 C 98 30 101 32 101 36 C 101 40 98 42 92 42 L 78 42 Z M 78 50 L 93 50 C 100 50 103 53 103 57 C 103 61 100 63 93 63 L 78 63 Z" />
+                    <!-- 装饰元素：铅笔线条 -->
+                    <path class="pencil-icon" d="M 120 15 L 135 15 L 135 18 L 132 21 L 129 21 L 126 18 L 126 15" stroke-width="2" fill="none" />
+                    <line class="pencil-line" x1="132" y1="21" x2="138" y2="27" stroke-width="1.5" />
+                    <!-- 芝片纹理 -->
+                    <rect class="chip-rect" x="120" y="55" width="18" height="12" rx="2" stroke-width="1.5" fill="none" />
+                    <line class="chip-line" x1="122" y1="58" x2="136" y2="58" stroke-width="0.8" />
+                    <line class="chip-line" x1="122" y1="61" x2="136" y2="61" stroke-width="0.8" />
+                    <line class="chip-line" x1="122" y1="64" x2="136" y2="64" stroke-width="0.8" />
+                </svg>
+            </div>
+            
+            <section class="card home-card">
+                <!-- 金刚区六宫格导航 -->
+                <div class="grid-menu">
+                    <a href="submit.html" class="grid-item">
+                        <div class="grid-icon">📷</div>
+                        <div class="grid-label">拍照批改</div>
+                    </a>
+                    <a href="recharge.html" class="grid-item">
+                        <div class="grid-icon">💰</div>
+                        <div class="grid-label">余额充值</div>
+                    </a>
+                    <a href="history.html" class="grid-item">
+                        <div class="grid-icon">📊</div>
+                        <div class="grid-label">批改记录</div>
+                    </a>
+                    <a href="tutorial.html" class="grid-item">
+                        <div class="grid-icon">📖</div>
+                        <div class="grid-label">使用教程</div>
+                    </a>
+                    <div class="grid-item" id="contactBtn">
+                        <div class="grid-icon">📞</div>
+                        <div class="grid-label">联系客服</div>
+                    </div>
+                    <div class="grid-item" id="shareBtn">
+                        <div class="grid-icon">📤</div>
+                        <div class="grid-label">分享应用</div>
+                    </div>
+                </div>
+                
+                <div class="button-group" id="buttonGroup">
+                    <!-- 按钮将通过 JavaScript 动态生成 -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>© 2026 智能作业批改系统 | Powered by DB科技</p>
+        </footer>
+    </div>
+
+    <!-- 联系客服弹窗 -->
+    <div class="modal-overlay" id="contactModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📞 联系客服</h3>
+                <button class="modal-close" id="closeContactModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <p class="contact-label">微信号</p>
+                        <p class="contact-value" id="wechatId">youdidit_winner</p>
+                        <button class="btn btn-primary" id="copyWechat">📋 复制微信号</button>
+                    </div>
+                    <div class="contact-divider"></div>
+                    <div class="contact-item">
+                        <div class="contact-icon">💬</div>
+                        <p class="contact-label">QQ号</p>
+                        <p class="contact-value" id="qqId">2598239034</p>
+                        <button class="btn btn-secondary" id="copyQQ">📋 复制QQ号</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分享弹窗 -->
+    <div class="modal-overlay" id="shareModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📤 分享应用</h3>
+                <button class="modal-close" id="closeShareModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="share-info">
+                    <div class="share-card">
+                        <div class="share-logo">📝</div>
+                        <h4>智能作业批改系统</h4>
+                        <p>AI驱动，秒级批改，精准评分</p>
+                    </div>
+                    <div class="share-link">
+                        <input type="text" id="shareLink" readonly>
+                        <button class="btn btn-primary" id="copyLink">📋 复制链接</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 移动端底部导航栏 -->
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="index.html" class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">首页</span>
+        </a>
+        <a href="submit.html" class="nav-item">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">提交</span>
+        </a>
+        <a href="add-question.html" class="nav-item teacher-only" style="display: none;">
+            <span class="nav-icon">➕</span>
+            <span class="nav-label">添加</span>
+        </a>
+        <a href="manage-questions.html" class="nav-item teacher-only" style="display: none;">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">管理</span>
+        </a>
+        <a href="recharge.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span class="nav-label">充值</span>
+        </a>
+    </nav>
+
+    <script src="index.js"></script>
+</body>
+</html>

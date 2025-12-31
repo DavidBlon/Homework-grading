@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用教程 - 智能作业批改系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tutorial-content {
+            padding: 0;
+        }
+        .tutorial-section {
+            margin-bottom: 2rem;
+        }
+        .tutorial-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .tutorial-section p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 0.75rem;
+        }
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .step-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .step-content h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        .step-content p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .tip-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-top: 1.5rem;
+        }
+        .tip-box h4 {
+            margin: 0 0 0.5rem 0;
+            color: #92400e;
+            font-size: 1rem;
+        }
+        .tip-box p {
+            margin: 0;
+            color: #78350f;
+            font-size: 0.9rem;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        .role-teacher {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .role-student {
+            background: #dcfce7;
+            color: #166534;
+        }
+    </style>
+</head>
+<body>
+    <!-- 毛玻璃页头 -->
+    <header class="glass-header">
+        <div class="header-content">
+            <a href="index.html" class="back-btn">
+                <span>← 返回</span>
+            </a>
+            <div class="header-title">
+                <h1>📖 使用教程</h1>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="usernameDisplay"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="card">
+            <div class="tutorial-content">
+                
+                <!-- 教师教程 -->
+                <div class="tutorial-section">
+                    <h3>👨‍🏫 教师使用流程 <span class="role-badge role-teacher">教师</span></h3>
+                    <ul class="step-list">
+                        <li>
+                            <span class="step-number">1</span>
+                            <div class="step-content">
+                                <h4>添加题目</h4>
+                                <p>点击"添加题目"，输入题目内容、标准答案和评分标准。支持文字输入或图片OCR识别。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-number">2</span>
+                            <div class="step-content">
+                                <h4>获取题目ID</h4>
+                                <p>题目添加成功后会显示题目ID，将此ID分享给学生。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-number">3</span>
+                            <div class="step-content">
+                                <h4>管理题目</h4>
+                                <p>在"题目管理"中可以查看、编辑或删除已添加的题目。</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 学生教程 -->
+                <div class="tutorial-section">
+                    <h3>👨‍🎓 学生使用流程 <span class="role-badge role-student">学生</span></h3>
+                    <ul class="step-list">
+                        <li>
+                            <span class="step-number">1</span>
+                            <div class="step-content">
+                                <h4>获取题目ID</h4>
+                                <p>从老师处获取要作答的题目ID。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-number">2</span>
+                            <div class="step-content">
+                                <h4>提交答案</h4>
+                                <p>点击"拍照批改"或"提交"，输入题目ID，拍照上传或输入答案。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-number">3</span>
+                            <div class="step-content">
+                                <h4>查看结果</h4>
+                                <p>AI会在几秒内完成批改，显示得分和详细评语。</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 充值说明 -->
+                <div class="tutorial-section">
+                    <h3>💰 充值说明</h3>
+                    <p>• 每日赠送 <strong>5次</strong> 免费批改额度，次日0点刷新</p>
+                    <p>• 超出免费次数后，每次批改消耗 <strong>¥0.01</strong></p>
+                    <p>• 点击"充值"选择金额，扫码支付即可到账</p>
+                </div>
+
+                <!-- 温馨提示 -->
+                <div class="tip-box">
+                    <h4>💡 温馨提示</h4>
+                    <p>拍照时请确保光线充足、字迹清晰，这样AI识别更准确哦！</p>
+                </div>
+
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>© 2026 智能作业批改系统 | Powered by DB科技</p>
+        </footer>
+    </div>
+
+    <!-- 移动端底部导航栏 -->
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">首页</span>
+        </a>
+        <a href="submit.html" class="nav-item">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">提交</span>
+        </a>
+        <a href="add-question.html" class="nav-item teacher-only" style="display: none;">
+            <span class="nav-icon">➕</span>
+            <span class="nav-label">添加</span>
+        </a>
+        <a href="manage-questions.html" class="nav-item teacher-only" style="display: none;">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">管理</span>
+        </a>
+        <a href="recharge.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span class="nav-label">充值</span>
+        </a>
+    </nav>
+
+    <script src="header-utils.js"></script>
+</body>
+</html>

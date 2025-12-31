@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  username        String    @unique // 用户名（唯一）
+  password        String    // 密码（应该存储哈希值）
+  role            String    // 'student' or 'teacher'
+  isAdmin         Boolean   @default(false) // 是否为管理员（可以审核订单）
+  dailyQuota      Int       @default(5) // 每日免费额度
+  quotaUsedToday  Int       @default(0) // 今日已使用次数
+  lastResetDate   DateTime  @default(now()) // 上次重置日期
+  balance         Float     @default(0) // 余额（元）
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  transactions    Transaction[]
+  questions       Question[] // 该用户创建的题目
+}
+
+model Question {
+  id              Int       @id @default(autoincrement())
+  content         String    // 题目文本
+  standardAnswer  String    // 标准答案或参考范文
+  maxScore        Int       // 满分
+  scoringRubric   String    // 评分标准描述
+  type            String    // 'objective' or 'subjective'
+  createdById     Int       @default(1) // 创建者ID（默认admin用户）
+  createdBy       User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  submissions     Submission[]
+}
+
+model Submission {
+  id              Int       @id @default(autoincrement())
+  questionId      Int       // 关联的题目ID
+  question        Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  studentName     String    // 学生姓名
+  imagePath       String    // 上传的图片路径
+  ocrText         String?   // 识别出的文字
+  createdAt       DateTime  @default(now())
+  gradingResults  GradingResult[]
+}
+
+model GradingResult {
+  id            Int       @id @default(autoincrement())
+  submissionId  Int       // 关联的提交ID
+  submission    Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  score         Int       // AI 打分
+  feedback      String    // AI 评语
+  details       String    // JSON 字符串，存储详细的打分理由
+  createdAt     DateTime  @default(now())
+}
+
+// 交易记录
+model Transaction {
+  id            Int       @id @default(autoincrement())
+  userId        Int       // 用户ID
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          String    // 'recharge'(充值) or 'consume'(消费)
+  amount        Float     // 金额（元）
+  description   String    // 描述
+  paymentMethod String?   // 支付方式: 'alipay', 'wechat', 'unionpay'
+  orderId       String?   // 订单号
+  status        String    @default("pending") // 'pending', 'completed', 'failed'
+  createdAt     DateTime  @default(now())
+}
+

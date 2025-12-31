@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提交答案 - 作业批改系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 毛玻璃页头 -->
+    <header class="glass-header">
+        <div class="header-content">
+            <a href="index.html" class="back-btn">
+                <span>← 返回</span>
+            </a>
+            <div class="header-title">
+                <h1>📤 提交答案</h1>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="usernameDisplay"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+            <!-- 额度显示区 -->
+            <div class="quota-banner" id="quotaBanner" style="display: none;">
+                <div class="quota-info">
+                    <div class="quota-item">
+                        <span class="quota-label">🎁 今日免费额度</span>
+                        <span class="quota-value" id="freeQuota">-</span>
+                    </div>
+                    <div class="quota-item">
+                        <span class="quota-label">💰 余额</span>
+                        <span class="quota-value" id="balance">-</span>
+                    </div>
+                    <div class="quota-item">
+                        <span class="quota-label">💸 批改单价</span>
+                        <span class="quota-value">¥0.01/次</span>
+                    </div>
+                    <div class="quota-item">
+                        <span class="quota-label">⏰ 额度刷新</span>
+                        <span class="quota-value countdown" id="quotaCountdown">-</span>
+                    </div>
+                </div>
+                <a href="recharge.html" class="btn btn-primary" style="padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; white-space: nowrap;">
+                    ⚡ 立即充值
+                </a>
+            </div>
+
+            <!-- 提交表单 -->
+            <section class="card" id="submitSection">
+                <h2>提交答案</h2>
+                
+                <!-- 搜索题目 -->
+                <div class="search-question-section">
+                    <div class="form-group">
+                        <label for="questionIdInput">
+                            🔍 输入题目ID
+                            <span class="required">*</span>
+                        </label>
+                        <div class="search-input-wrapper">
+                            <input 
+                                type="number" 
+                                id="questionIdInput" 
+                                placeholder="请输入老师提供的题目ID" 
+                                required
+                                min="1"
+                            >
+                            <button type="button" id="searchQuestionBtn" class="btn btn-primary">
+                                🔎 搜索题目
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 题目信息展示 -->
+                    <div id="questionInfoCard" class="question-info-card" style="display: none;">
+                        <div class="question-header">
+                            <span class="question-id-badge">题目 #<span id="displayQuestionId"></span></span>
+                            <span class="question-type-badge" id="displayQuestionType"></span>
+                        </div>
+                        <div class="question-content">
+                            <h3>📝 题目内容：</h3>
+                            <p id="displayQuestionContent"></p>
+                        </div>
+                        <div class="question-score">
+                            <strong>🎯 满分：</strong>
+                            <span id="displayMaxScore"></span> 分
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 答案提交表单 -->
+                <form id="submitForm" enctype="multipart/form-data" style="display: none;">
+                    <input type="hidden" id="questionId" name="questionId">
+
+                    <div class="form-group">
+                        <label for="studentName">学生姓名</label>
+                        <input type="text" id="studentName" name="studentName" placeholder="请输入学生姓名" required>
+                    </div>
+
+                    <!-- 答案输入方式选择 -->
+                    <div class="form-group">
+                        <label>答案输入方式</label>
+                        <div class="input-method-tabs">
+                            <button type="button" class="tab-btn" data-method="text" id="textAnswerTab">📝 文字输入</button>
+                            <button type="button" class="tab-btn active" data-method="image" id="imageAnswerTab">📷 图片上传</button>
+                        </div>
+                    </div>
+
+                    <!-- 文字输入区域 -->
+                    <div class="form-group" id="textAnswerArea" style="display: none;">
+                        <label for="textAnswer">答案内容</label>
+                        <textarea id="textAnswer" name="textAnswer" rows="8" placeholder="请输入您的答案内容"></textarea>
+                    </div>
+
+                    <!-- 图片上传区域 -->
+                    <div class="form-group" id="imageAnswerArea">
+                        <label for="image">上传答案图片</label>
+                        <div class="file-upload">
+                            <input type="file" id="image" name="image" accept="image/jpeg,image/jpg,image/png">
+                            <label for="image" class="file-label">
+                                <span class="file-icon">📷</span>
+                                <span class="file-text">点击选择图片或拖拽到此处</span>
+                                <span class="file-hint">支持 JPG、PNG 格式，最大 5MB</span>
+                            </label>
+                        </div>
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span class="btn-text">提交批改</span>
+                        <span class="btn-loader" style="display: none;">⏳</span>
+                    </button>
+                </form>
+                
+                <!-- 进度条 -->
+                <div id="submitProgress" class="ocr-progress-container" style="display: none; margin-top: 1.5rem;">
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" id="submitProgressBar" style="width: 0%;"></div>
+                    </div>
+                    <p class="progress-text" id="submitProgressText">⚙️ 正在处理...</p>
+                </div>
+            </section>
+
+            <!-- 结果显示 -->
+            <section class="card result-card" id="resultSection" style="display: none;">
+                <h2>批改结果</h2>
+                <div id="resultContent"></div>
+                <button class="btn btn-secondary" id="resetBtn">重新提交</button>
+            </section>
+
+            <!-- 错误提示 -->
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2026 智能作业批改系统 | Powered by DB科技</p>
+        </footer>
+    </div>
+
+    <!-- 移动端底部导航栏 -->
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">首页</span>
+        </a>
+        <a href="submit.html" class="nav-item active">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">提交</span>
+        </a>
+        <a href="add-question.html" class="nav-item teacher-only" style="display: none;">
+            <span class="nav-icon">➕</span>
+            <span class="nav-label">添加</span>
+        </a>
+        <a href="manage-questions.html" class="nav-item teacher-only" style="display: none;">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">管理</span>
+        </a>
+        <a href="recharge.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span class="nav-label">充值</span>
+        </a>
+    </nav>
+
+    <script src="header-utils.js"></script>
+    <script src="submit.js"></script>
+</body>
+</html>
+

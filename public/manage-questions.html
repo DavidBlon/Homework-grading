@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题目管理 - 作业批改系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 毛玻璃页头 -->
+    <header class="glass-header">
+        <div class="header-content">
+            <a href="index.html" class="back-btn">
+                <span>← 返回</span>
+            </a>
+            <div class="header-title">
+                <h1>📋 题目管理</h1>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="usernameDisplay"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="max-width: 1200px;">
+        <main>
+            <!-- 操作按钮区 -->
+            <section class="card">
+                <div class="manage-header">
+                    <h2>题目列表</h2>
+                    <div class="manage-actions">
+                        <button class="btn-icon" id="refreshBtn" title="刷新列表">
+                            🔄
+                        </button>
+                        <a href="add-question.html" class="btn btn-primary">
+                            <span style="font-size: 1.1rem; font-weight: bold;">+</span>
+                            <span>添加题目</span>
+                        </a>
+                        <a href="question-stats.html" class="btn btn-success">
+                            <span>📊</span>
+                            <span>题目答题统计</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 题目列表表格 -->
+                <div id="questionsTableContainer" style="margin-top: 1.5rem;">
+                    <div style="text-align: center; padding: 40px 0; color: #666;">
+                        <div class="btn-loader" style="display: inline-block; font-size: 24px;">⏳</div>
+                        <p style="margin-top: 10px;">正在加载题目...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 编辑题目对话框 -->
+            <div id="editModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>编辑题目</h2>
+                        <span class="modal-close" id="closeModal">&times;</span>
+                    </div>
+                    <form id="editQuestionForm">
+                        <input type="hidden" id="editQuestionId">
+                        
+                        <div class="form-group">
+                            <label for="editQuestionContent">题目内容</label>
+                            <textarea id="editQuestionContent" name="content" rows="3" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editQuestionType">题目类型</label>
+                            <select id="editQuestionType" name="type" required>
+                                <option value="objective">客观题</option>
+                                <option value="subjective">主观题</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editQuestionMaxScore">满分</label>
+                            <input type="number" id="editQuestionMaxScore" name="maxScore" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editStandardAnswer">标准答案/参考范文</label>
+                            <textarea id="editStandardAnswer" name="standardAnswer" rows="5" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editScoringRubric">评分标准</label>
+                            <textarea id="editScoringRubric" name="scoringRubric" rows="5" required></textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="cancelEdit">取消</button>
+                            <button type="submit" class="btn btn-primary" id="saveBtn">
+                                <span class="btn-text">保存修改</span>
+                                <span class="btn-loader" style="display: none;">⏳</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 错误提示 -->
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            
+            <!-- 成功提示 -->
+            <div id="successMessage" class="success-message" style="display: none;"></div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2026 智能作业批改系统 | Powered by DB科技</p>
+        </footer>
+    </div>
+
+    <!-- 移动端底部导航栏 -->
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">首页</span>
+        </a>
+        <a href="submit.html" class="nav-item">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">提交</span>
+        </a>
+        <a href="add-question.html" class="nav-item teacher-only">
+            <span class="nav-icon">➕</span>
+            <span class="nav-label">添加</span>
+        </a>
+        <a href="manage-questions.html" class="nav-item teacher-only active">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">管理</span>
+        </a>
+        <a href="recharge.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span class="nav-label">充值</span>
+        </a>
+    </nav>
+
+    <script src="header-utils.js"></script>
+    <script src="manage-questions.js"></script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+/* 全局重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    overflow: hidden;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 启动页容器 */
+.splash-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.6s ease-out;
+}
+
+.splash-container.fade-out {
+    opacity: 0;
+}
+
+/* 内容包装器 */
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.content-wrapper.collapse {
+    transform: scale(0.5) translateY(20px);
+    opacity: 0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Logo包装器 */
+.logo-wrapper {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+    animation: logoEnter 0.5s ease-out 0.1s forwards;
+}
+
+@keyframes logoEnter {
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Logo SVG */
+.splash-logo {
+    width: 180px;
+    height: auto;
+    filter: drop-shadow(0 8px 32px rgba(255, 255, 255, 0.3));
+}
+
+/* Logo路径样式 */
+.letter-d {
+    fill: url(#gradientD);
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 1;
+}
+
+.letter-b {
+    fill: url(#gradientB);
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 1;
+}
+
+.pencil-icon,
+.pencil-line {
+    stroke: rgba(96, 165, 250, 0.9);
+    fill: none;
+}
+
+.chip-rect,
+.chip-line {
+    stroke: rgba(139, 92, 246, 0.8);
+    fill: none;
+}
+
+/* 进度条包装器 - 初始隐藏 */
+.progress-wrapper {
+    position: absolute;
+    width: 280px;
+    opacity: 0;
+    transform: scaleX(0.3);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-wrapper.show {
+    opacity: 1;
+    transform: scaleX(1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 进度条外框 */
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 2px 10px rgba(0, 0, 0, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* 进度条填充 */
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, 
+        #60a5fa 0%, 
+        #a78bfa 50%,
+        #f472b6 100%
+    );
+    border-radius: 3px;
+    transition: width 0.1s ease-out;
+    box-shadow: 0 0 15px rgba(96, 165, 250, 0.5);
+}
+
+/* 完成状态 */
+.progress-wrapper.complete .progress-fill {
+    background: linear-gradient(90deg, 
+        #34d399 0%, 
+        #60a5fa 100%
+    );
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.6);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .splash-logo {
+        width: 140px;
+    }
+
+    .brand-text {
+        font-size: 1.3rem;
+        letter-spacing: 2px;
+    }
+
+    .progress-wrapper {
+        width: 240px;
+    }
+}
+
+@media (max-width: 480px) {
+    .splash-logo {
+        width: 120px;
+    }
+
+    .brand-text {
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+
+    .progress-wrapper {
+        width: 200px;
+    }
+    
+    .progress-bar {
+        height: 5px;
+    }
+    
+    .progress-text {
+        font-size: 0.8rem;
+    }
+}

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题目答题统计 - 作业批改系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 毛玻璃页头 -->
+    <header class="glass-header">
+        <div class="header-content">
+            <a href="index.html" class="back-btn">
+                <span>← 返回</span>
+            </a>
+            <div class="header-title">
+                <h1>📊 题目答题统计</h1>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="usernameDisplay"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 题目选择 -->
+        <section class="card">
+            <h2>📝 选择题目</h2>
+            <div class="form-group">
+                <label for="questionSelect">我的题目</label>
+                <select id="questionSelect" class="form-control">
+                    <option value="">正在加载...</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- 题目详情 -->
+        <section class="card" id="questionDetail" style="display: none;">
+            <h2>📋 题目详情</h2>
+            <div class="question-detail-content">
+                <div class="detail-item">
+                    <strong>题目内容：</strong>
+                    <p id="questionContent"></p>
+                </div>
+                <div class="detail-item">
+                    <strong>标准答案：</strong>
+                    <p id="standardAnswer"></p>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-item">
+                        <strong>题目类型：</strong>
+                        <span id="questionType"></span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>满分：</strong>
+                        <span id="maxScore"></span> 分
+                    </div>
+                    <div class="detail-item">
+                        <strong>提交数：</strong>
+                        <span id="submissionCount">0</span> 次
+                    </div>
+                    <div class="detail-item">
+                        <strong>平均分：</strong>
+                        <span id="averageScore">-</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 答题记录列表 -->
+        <section class="card" id="submissionsSection" style="display: none;">
+            <div class="manage-header">
+                <h2>📚 学生答题记录</h2>
+                <div class="search-student-wrapper">
+                    <input 
+                        type="text" 
+                        id="studentNameSearch" 
+                        placeholder="搜索学生姓名"
+                        class="student-search-input"
+                    >
+                    <button id="searchStudentBtn" class="btn btn-primary">
+                        🔍 搜索
+                    </button>
+                    <button id="clearSearchBtn" class="btn btn-secondary" style="display: none;">
+                        ✕ 清除
+                    </button>
+                </div>
+            </div>
+            
+            <div id="submissionsList"></div>
+            <div id="noSubmissions" style="display: none; text-align: center; padding: 2rem; color: #666;">
+                📭 暂无学生提交记录
+            </div>
+            
+            <!-- 分页控制 -->
+            <div class="pagination" id="paginationControls" style="display: none;">
+                <button class="pagination-btn" id="prevPageBtn">
+                    ← 上一页
+                </button>
+                <span class="pagination-info" id="pageInfo">第 1 / 1 页</span>
+                <button class="pagination-btn" id="nextPageBtn">
+                    下一页 →
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2026 智能作业批改系统 | Powered by DB科技</p>
+    </footer>
+
+    <script src="header-utils.js"></script>
+    <script src="question-stats.js"></script>
+</body>
+</html>
