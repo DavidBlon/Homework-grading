@@ -3268,3 +3268,28 @@ footer p {
     white-space: nowrap;
     padding: 0.75rem 1rem;
 }
+
+/* 移动端模态框修复 - 确保按钮不被底部导航挡住 */
+@media (max-width: 768px) {
+    .modal {
+        padding: 1rem;
+        padding-bottom: 100px; /* 给底部导航栏留出空间 */
+    }
+    
+    .modal-content {
+        max-height: calc(100vh - 150px);
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+    
+    .modal-footer {
+        padding: 1rem 1.5rem 1.5rem;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        padding: 0.875rem;
+    }
+}
