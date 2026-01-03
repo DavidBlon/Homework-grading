@@ -4,20 +4,18 @@ const API_BASE = '/api/auth';
 // DOM 元素
 const loginForm = document.getElementById('loginForm');
 const loginBtn = document.getElementById('loginBtn');
-const errorMessage = document.getElementById('errorMessage');
 
-// 显示错误消息
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-    setTimeout(() => {
-        errorMessage.style.display = 'none';
-    }, 5000);
+// 显示错误消息 - 使用全局Toast
+function showErrorMsg(message) {
+    if (typeof window.showError === 'function') {
+        window.showError(message);
+    } else {
+        console.error(message);
+    }
 }
 
-// 隐藏错误消息
 function hideError() {
-    errorMessage.style.display = 'none';
+    // Toast自动消失
 }
 
 // 检查登录状态
@@ -52,7 +50,7 @@ loginForm.addEventListener('submit', async function(e) {
     const password = document.getElementById('password').value;
 
     if (!username || !password) {
-        showError('请填写用户名和密码');
+        showErrorMsg('请填写用户名和密码');
         return;
     }
 
@@ -84,7 +82,7 @@ loginForm.addEventListener('submit', async function(e) {
             } catch {
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
-            showError(errorData.message || '登录失败，请重试');
+            showErrorMsg(errorData.message || '登录失败，请重试');
             return;
         }
 
@@ -98,11 +96,11 @@ loginForm.addEventListener('submit', async function(e) {
                 window.location.href = 'submit.html';
             }
         } else {
-            showError(result.message || '登录失败，请重试');
+            showErrorMsg(result.message || '登录失败，请重试');
         }
     } catch (error) {
         console.error('登录错误:', error);
-        showError('网络错误，请检查连接后重试: ' + (error.message || '未知错误'));
+        showErrorMsg('网络错误，请检查连接后重试: ' + (error.message || '未知错误'));
     } finally {
         // 恢复按钮状态
         loginBtn.disabled = false;

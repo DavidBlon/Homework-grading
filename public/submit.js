@@ -139,18 +139,18 @@ function displayQuestionInfo(question) {
     questionInfoCard.style.display = 'block';
 }
 
-// 显示错误消息
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-    setTimeout(() => {
-        errorMessage.style.display = 'none';
-    }, 5000);
+// 显示错误消息 - 使用全局Toast
+function showErrorMsg(message) {
+    if (typeof window.showError === 'function') {
+        window.showError(message);
+    } else {
+        console.error(message);
+    }
 }
 
 // 隐藏错误消息
 function hideError() {
-    errorMessage.style.display = 'none';
+    // Toast自动消失
 }
 
 // 搜索按钮点击事件
@@ -170,14 +170,14 @@ imageInput.addEventListener('change', function(e) {
     if (file) {
         // 验证文件类型
         if (!file.type.match('image/jpeg') && !file.type.match('image/png') && !file.type.match('image/jpg')) {
-            showError('请上传 JPG 或 PNG 格式的图片');
+            showErrorMsg('请上传 JPG 或 PNG 格式的图片');
             imageInput.value = '';
             return;
         }
         
         // 验证文件大小
         if (file.size > 5 * 1024 * 1024) {
-            showError('图片大小不能超过 5MB');
+            showErrorMsg('图片大小不能超过 5MB');
             imageInput.value = '';
             return;
         }
@@ -226,12 +226,12 @@ submitForm.addEventListener('submit', async function(e) {
     
     // 验证
     if (!questionId) {
-        showError('请选择题目');
+        showErrorMsg('请选择题目');
         return;
     }
 
     if (!studentName.trim()) {
-        showError('请输入学生姓名');
+        showErrorMsg('请输入学生姓名');
         return;
     }
 
@@ -243,19 +243,19 @@ submitForm.addEventListener('submit', async function(e) {
     if (answerInputMethod === 'image') {
         const imageFile = imageInput.files[0];
         if (!imageFile) {
-            showError('请选择图片文件');
+            showErrorMsg('请选择图片文件');
             return;
         }
         // 检查文件大小（5MB）
         if (imageFile.size > 5 * 1024 * 1024) {
-            showError('图片大小不能超过 5MB');
+            showErrorMsg('图片大小不能超过 5MB');
             return;
         }
         formData.append('image', imageFile);
     } else {
         const textAnswerValue = textAnswer.value.trim();
         if (!textAnswerValue) {
-            showError('请输入答案内容');
+            showErrorMsg('请输入答案内容');
             return;
         }
         formData.append('textAnswer', textAnswerValue);
@@ -312,14 +312,14 @@ submitForm.addEventListener('submit', async function(e) {
             submitForm.style.display = 'none';
             resultSection.style.display = 'block';
         } else {
-            showError(result.message || '提交失败，请重试');
+            showErrorMsg(result.message || '提交失败，请重试');
         }
     } catch (error) {
         console.error('提交错误:', error);
         clearInterval(progressInterval);
         submitProgress.style.display = 'none';
         submitBtn.style.display = 'block';
-        showError('网络错误，请检查连接后重试');
+        showErrorMsg('网络错误，请检查连接后重试');
     }
 });
 

@@ -20,7 +20,15 @@ const rechargeBtns = document.querySelectorAll('.recharge-btn');
 const customAmountInput = document.getElementById('customAmount');
 const confirmRechargeBtn = document.getElementById('confirmRecharge');
 const transactionsList = document.getElementById('transactionsList');
-const errorMessage = document.getElementById('errorMessage');
+
+// 显示错误消息 - 使用全局Toast
+function showErrorMsg(message) {
+    if (typeof window.showError === 'function') {
+        window.showError(message);
+    } else {
+        console.error(message);
+    }
+}
 
 // 加载用户余额和额度
 async function loadBalance() {
@@ -47,11 +55,11 @@ async function loadBalance() {
                     
                     // 根据剩余额度设置颜色
                     if (data.remainingFreeQuota === 0) {
-                        remainingQuotaInfo.style.color = '#ef4444'; // 红色
-                    } else if (data.remainingFreeQuota <= 2) {
-                        remainingQuotaInfo.style.color = '#f59e0b'; // 橙色
+                        remainingQuotaInfo.style.color = '#fecaca'; // 淡红色
+                    } else if (data.remainingFreeQuota <= 10) {
+                        remainingQuotaInfo.style.color = '#fef08a'; // 淡黄色
                     } else {
-                        remainingQuotaInfo.style.color = '#3b82f6'; // 蓝色
+                        remainingQuotaInfo.style.color = '#ffffff'; // 白色
                     }
                 }
             }
@@ -60,7 +68,7 @@ async function loadBalance() {
         }
     } catch (error) {
         console.error('加载余额错误:', error);
-        showError('加载余额失败');
+        showErrorMsg('加载余额失败');
     }
 }
 
@@ -170,12 +178,12 @@ customAmountInput.addEventListener('input', function() {
 // 确认充值按钮
 confirmRechargeBtn.addEventListener('click', async function() {
     if (selectedAmount <= 0) {
-        showError('请选择充值金额');
+        showErrorMsg('请选择充值金额');
         return;
     }
 
     if (selectedAmount < 0.01) {
-        showError('最低充值金额为 ¥0.01');
+        showErrorMsg('最低充值金额为 ¥0.01');
         return;
     }
 
@@ -191,7 +199,7 @@ confirmRechargeBtn.addEventListener('click', async function() {
 
     } catch (error) {
         console.error('生成收款码错误:', error);
-        showError('生成收款码失败，请重试');
+        showErrorMsg('生成收款码失败，请重试');
     }
 });
 
@@ -253,15 +261,15 @@ window.confirmPayment = async function() {
             // 关闭模态框
             closeQrcodeModal();
             
-            // 显示提示
-            alert(`充值订单已提交！
-订单号：${result.data.orderId}
-金额：¥${selectedAmount}
-
-您的充值申请已提交，请等待管理员审核。
-审核通过后余额将自动到账。
-
-预计审核时间：1-24小时`);
+            // 使用Toast显示提示
+            if (window.showSuccess) {
+                window.showSuccess(`充值订单已提交，请等待管理员审核`);
+            }
+            if (window.showInfo) {
+                setTimeout(() => {
+                    window.showInfo(`订单号：${result.data.orderId}，金额：¥${selectedAmount}`);
+                }, 500);
+            }
             
             // 刷新页面数据
             await loadBalance();
@@ -274,11 +282,11 @@ window.confirmPayment = async function() {
             customAmountInput.value = '';
             customAmountInput.style.display = 'none';
         } else {
-            showError(result.message || '提交订单失败');
+            showErrorMsg(result.message || '提交订单失败');
         }
     } catch (error) {
         console.error('确认支付错误:', error);
-        showError('提交订单失败，请重试');
+        showErrorMsg('提交订单失败，请重试');
     }
 };
 
@@ -301,14 +309,7 @@ async function mockPaymentSuccess(orderId) {
     }
 }
 
-// 显示错误消息
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-    setTimeout(() => {
-        errorMessage.style.display = 'none';
-    }, 5000);
-}
+// 显示错误消息 - 已经在上面定义过了showError
 
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', async function() {

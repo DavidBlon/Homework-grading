@@ -33,7 +33,9 @@ async function checkAuth() {
             if (result.success && result.data.role === 'teacher') {
                 return;
             } else {
-                alert('此功能仅限教师使用');
+                if (window.showError) {
+                    window.showError('此功能仅限教师使用');
+                }
                 window.location.href = 'index.html';
             }
         } else {
@@ -144,7 +146,9 @@ async function loadQuestionStats(questionId) {
         }
     } catch (error) {
         console.error('加载数据错误:', error);
-        alert('加载数据失败：' + error.message);
+        if (window.showError) {
+            window.showError('加载数据失败：' + error.message);
+        }
     }
 }
 

@@ -4,24 +4,22 @@ const API_BASE = '/api/auth';
 // DOM 元素
 const registerForm = document.getElementById('registerForm');
 const registerBtn = document.getElementById('registerBtn');
-const errorMessage = document.getElementById('errorMessage');
 
 // 从 URL 判断是学生还是教师注册
 const isTeacher = window.location.pathname.includes('register-teacher');
 const role = isTeacher ? 'teacher' : 'student';
 
-// 显示错误消息
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-    setTimeout(() => {
-        errorMessage.style.display = 'none';
-    }, 5000);
+// 显示错误消息 - 使用全局Toast
+function showErrorMsg(message) {
+    if (typeof window.showError === 'function') {
+        window.showError(message);
+    } else {
+        console.error(message);
+    }
 }
 
-// 隐藏错误消息
 function hideError() {
-    errorMessage.style.display = 'none';
+    // Toast自动消失
 }
 
 // 注册表单提交
@@ -35,22 +33,22 @@ registerForm.addEventListener('submit', async function(e) {
 
     // 验证
     if (!username || !password || !confirmPassword) {
-        showError('请填写所有必填项');
+        showErrorMsg('请填写所有必填项');
         return;
     }
 
     if (username.length < 3 || username.length > 20) {
-        showError('用户名长度必须在 3-20 个字符之间');
+        showErrorMsg('用户名长度必须在 3-20 个字符之间');
         return;
     }
 
     if (password.length < 6) {
-        showError('密码长度至少为 6 个字符');
+        showErrorMsg('密码长度至少为 6 个字符');
         return;
     }
 
     if (password !== confirmPassword) {
-        showError('两次输入的密码不一致');
+        showErrorMsg('两次输入的密码不一致');
         return;
     }
 
@@ -83,29 +81,27 @@ registerForm.addEventListener('submit', async function(e) {
             } catch {
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
-            showError(errorData.message || '注册失败，请重试');
+            showErrorMsg(errorData.message || '注册失败，请重试');
             return;
         }
 
         const result = await response.json();
 
         if (result.success) {
-            // 注册成功，显示成功消息并跳转
-            const successMsg = document.createElement('div');
-            successMsg.className = 'success-message';
-            successMsg.textContent = '注册成功！正在跳转到登录页面...';
-            successMsg.style.display = 'block';
-            errorMessage.parentNode.insertBefore(successMsg, errorMessage);
+            // 注册成功，使用Toast显示成功消息
+            if (window.showSuccess) {
+                window.showSuccess('注册成功！正在跳转到登录页面...');
+            }
             
             setTimeout(() => {
                 window.location.href = 'login.html';
             }, 1500);
         } else {
-            showError(result.message || '注册失败，请重试');
+            showErrorMsg(result.message || '注册失败，请重试');
         }
     } catch (error) {
         console.error('注册错误:', error);
-        showError('网络错误，请检查连接后重试: ' + error.message);
+        showErrorMsg('网络错误，请检查连接后重试: ' + error.message);
     } finally {
         // 恢复按钮状态
         registerBtn.disabled = false;

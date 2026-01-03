@@ -40,7 +40,9 @@ async function checkAuth() {
                 return;
             } else {
                 // 不是教师，跳转到首页
-                alert('您没有权限访问此页面');
+                if (window.showError) {
+                    window.showError('您没有权限访问此页面');
+                }
                 window.location.href = 'index.html';
             }
         } else {
@@ -81,7 +83,7 @@ questionImage.addEventListener('change', async function(e) {
     
     // 验证文件类型
     if (!file.type.startsWith('image/')) {
-        showError('请上传图片文件！');
+        showErrorMsg('请上传图片文件！');
         questionImage.value = '';
         return;
     }
@@ -199,69 +201,46 @@ async function performOCR(file, imageData) {
             // 显示结果区域
             ocrResultArea.style.display = 'block';
             
-            showSuccess('✅ 图片识别成功！您可以编辑修改识别结果');
+            showSuccessMsg('✅ 图片识别成功！您可以编辑修改识别结果');
         } else {
             // OCR失败，恢复上传区域
             fileUploadArea.style.display = 'block';
-            showError(result.message || '识别失败，请重试');
+            showErrorMsg(result.message || '识别失败，请重试');
         }
     } catch (error) {
         console.error('OCR错误:', error);
         clearInterval(progressInterval);
         ocrStatus.style.display = 'none';
         fileUploadArea.style.display = 'block';
-        showError('识别失败：' + error.message);
+        showErrorMsg('识别失败：' + error.message);
     }
 }
 
-// 显示错误消息
-function showError(message) {
-    if (!errorMessage) {
-        console.error('错误消息元素不存在');
-        alert(message); // 降级到 alert
-        return;
+// 显示错误消息 - 使用全局Toast
+function showErrorMsg(message) {
+    if (typeof window.showError === 'function') {
+        window.showError(message);
+    } else {
+        console.error(message);
     }
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-    if (successMessage) {
-        successMessage.style.display = 'none';
-    }
-    setTimeout(() => {
-        if (errorMessage) {
-            errorMessage.style.display = 'none';
-        }
-    }, 5000);
 }
 
-// 隐藏错误消息
+// 显示成功消息 - 使用全局Toast
+function showSuccessMsg(message) {
+    if (typeof window.showSuccess === 'function') {
+        window.showSuccess(message);
+    } else {
+        console.log(message);
+    }
+}
+
+// 隐藏消息（Toast自动消失）
 function hideError() {
-    errorMessage.style.display = 'none';
+    // Toast自动消失
 }
 
-// 显示成功消息
-function showSuccess(message) {
-    if (!successMessage) {
-        console.error('成功消息元素不存在');
-        alert(message); // 降级到 alert
-        return;
-    }
-    successMessage.textContent = message;
-    successMessage.style.display = 'block';
-    if (errorMessage) {
-        errorMessage.style.display = 'none';
-    }
-    setTimeout(() => {
-        if (successMessage) {
-            successMessage.style.display = 'none';
-        }
-    }, 5000);
-}
-
-// 隐藏成功消息
 function hideSuccess() {
-    if (successMessage) {
-        successMessage.style.display = 'none';
-    }
+    // Toast自动消失
 }
 
 // 添加题目表单提交
@@ -276,14 +255,14 @@ addQuestionForm.addEventListener('submit', async function(e) {
     if (currentInputMethod === 'text') {
         questionContentText = questionContent.value.trim();
         if (!questionContentText) {
-            showError('请输入题目内容');
+            showErrorMsg('请输入题目内容');
             return;
         }
     } else {
         // 图片输入模式
         questionContentText = recognizedText.value.trim();
         if (!questionContentText) {
-            showError('请上传图片并等待识别完成');
+            showErrorMsg('请上传图片并等待识别完成');
             return;
         }
     }
@@ -295,13 +274,13 @@ addQuestionForm.addEventListener('submit', async function(e) {
 
     // 验证
     if (!questionType || !questionMaxScore || !standardAnswer || !scoringRubric) {
-        showError('请填写所有必填项');
+        showErrorMsg('请填写所有必填项');
         return;
     }
 
     const maxScore = parseInt(questionMaxScore, 10);
     if (isNaN(maxScore) || maxScore <= 0) {
-        showError('满分必须是大于0的数字');
+        showErrorMsg('满分必须是大于0的数字');
         return;
     }
 
@@ -341,7 +320,7 @@ addQuestionForm.addEventListener('submit', async function(e) {
             } catch {
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
-            showError(errorData.message || '添加题目失败，请重试');
+            showErrorMsg(errorData.message || '添加题目失败，请重试');
             return;
         }
 
@@ -362,16 +341,16 @@ addQuestionForm.addEventListener('submit', async function(e) {
             }
             
             // 显示成功消息，包含题目ID
-            showSuccess('✅ 题目添加成功！题目ID: ' + result.data.id);
+            showSuccessMsg('✅ 题目添加成功！题目ID: ' + result.data.id);
             
             // 保持当前位置，不滚动
         } else {
             console.error('添加失败:', result);
-            showError(result.message || '添加题目失败，请重试');
+            showErrorMsg(result.message || '添加题目失败，请重试');
         }
     } catch (error) {
         console.error('添加题目错误:', error);
-        showError('网络错误，请检查连接后重试: ' + (error.message || '未知错误'));
+        showErrorMsg('网络错误，请检查连接后重试: ' + (error.message || '未知错误'));
     } finally {
         // 恢复按钮状态
         addQuestionBtn.disabled = false;

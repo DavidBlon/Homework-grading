@@ -13,28 +13,45 @@ async function main() {
   
   if (existingAdmin) {
     console.log('✅ 管理员账号已存在，跳过创建');
-    return;
+  } else {
+    // 创建管理员账号
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    
+    const admin = await prisma.user.create({
+      data: {
+        username: 'admin',
+        password: hashedPassword,
+        role: 'teacher',
+        isAdmin: true,
+        balance: 9999,
+        dailyQuota: 999
+      }
+    });
+    
+    console.log('✅ 管理员账号创建成功！');
+    console.log('   用户名: admin');
+    console.log('   密码: admin123');
+    console.log('   角色: 教师(管理员)');
+    console.log('   请登录后立即修改密码！');
   }
   
-  // 创建管理员教师账号
-  const hashedPassword = await bcrypt.hash('teacher123', 10);
-  
-  const admin = await prisma.user.create({
+  // 更新所有非管理员用户的每日额度为50
+  console.log('检查用户额度...');
+  const result = await prisma.user.updateMany({
+    where: {
+      isAdmin: false,
+      dailyQuota: { lt: 50 }
+    },
     data: {
-      username: 'teacher1',
-      password: hashedPassword,
-      role: 'teacher',
-      isAdmin: true,
-      balance: 9999,
-      dailyQuota: 999
+      dailyQuota: 50
     }
   });
   
-  console.log('✅ 管理员教师账号创建成功！');
-  console.log('   用户名: teacher1');
-  console.log('   密码: teacher123');
-  console.log('   角色: 教师(管理员)');
-  console.log('   请登录后立即修改密码！');
+  if (result.count > 0) {
+    console.log(`✅ 已更新 ${result.count} 个用户的每日额度为50次`);
+  } else {
+    console.log('✅ 所有用户额度已是最新');
+  }
 }
 
 main()

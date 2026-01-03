@@ -30,7 +30,9 @@ async function checkAuth() {
             if (result.success && result.data.role === 'teacher') {
                 return; // 已登录且是教师
             } else {
-                alert('您没有权限访问此页面');
+                if (window.showError) {
+                    window.showError('您没有权限访问此页面');
+                }
                 window.location.href = 'index.html';
             }
         } else {
@@ -42,26 +44,22 @@ async function checkAuth() {
     }
 }
 
-// 显示错误消息
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-    successMessage.style.display = 'none';
-    setTimeout(() => {
-        errorMessage.style.display = 'none';
-    }, 5000);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+// 显示错误消息 - 使用全局Toast
+function showErrorMsg(message) {
+    if (typeof window.showError === 'function') {
+        window.showError(message);
+    } else {
+        console.error(message);
+    }
 }
 
-// 显示成功消息
-function showSuccess(message) {
-    successMessage.textContent = message;
-    successMessage.style.display = 'block';
-    errorMessage.style.display = 'none';
-    setTimeout(() => {
-        successMessage.style.display = 'none';
-    }, 5000);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+// 显示成功消息 - 使用全局Toast
+function showSuccessMsg(message) {
+    if (typeof window.showSuccess === 'function') {
+        window.showSuccess(message);
+    } else {
+        console.log(message);
+    }
 }
 
 // 加载题目列表
@@ -89,12 +87,12 @@ async function loadQuestions() {
             currentPage = 1; // 重置到第一页
             displayQuestions();
         } else {
-            showError('加载题目列表失败: ' + result.message);
+            showErrorMsg('加载题目列表失败: ' + result.message);
             questionsTableContainer.innerHTML = '<p style="text-align: center; color: #666;">加载失败</p>';
         }
     } catch (error) {
         console.error('加载题目列表错误:', error);
-        showError('加载题目列表失败，请刷新页面重试');
+        showErrorMsg('加载题目列表失败，请刷新页面重试');
         questionsTableContainer.innerHTML = '<p style="text-align: center; color: #666;">加载失败</p>';
     }
 }
@@ -218,11 +216,11 @@ async function editQuestion(questionId) {
             // 显示模态框
             editModal.style.display = 'block';
         } else {
-            showError('获取题目详情失败: ' + result.message);
+            showErrorMsg('获取题目详情失败: ' + result.message);
         }
     } catch (error) {
         console.error('获取题目详情错误:', error);
-        showError('获取题目详情失败');
+        showErrorMsg('获取题目详情失败');
     }
 }
 
@@ -241,14 +239,14 @@ async function deleteQuestion(questionId) {
         const result = await response.json();
 
         if (result.success) {
-            showSuccess('题目删除成功！');
+            showSuccessMsg('题目删除成功！');
             await loadQuestions(); // 重新加载列表
         } else {
-            showError('删除题目失败: ' + result.message);
+            showErrorMsg('删除题目失败: ' + result.message);
         }
     } catch (error) {
         console.error('删除题目错误:', error);
-        showError('删除题目失败');
+        showErrorMsg('删除题目失败');
     }
 }
 
@@ -265,7 +263,7 @@ editQuestionForm.addEventListener('submit', async function(e) {
 
     // 验证
     if (!content || !type || !maxScore || !standardAnswer || !scoringRubric) {
-        alert('请填写所有必填项');
+        showErrorMsg('请填写所有必填项');
         return;
     }
 
@@ -295,15 +293,15 @@ editQuestionForm.addEventListener('submit', async function(e) {
         const result = await response.json();
 
         if (result.success) {
-            showSuccess('题目更新成功！');
+            showSuccessMsg('题目更新成功！');
             editModal.style.display = 'none';
             await loadQuestions(); // 重新加载列表
         } else {
-            showError('更新题目失败: ' + result.message);
+            showErrorMsg('更新题目失败: ' + result.message);
         }
     } catch (error) {
         console.error('更新题目错误:', error);
-        showError('更新题目失败');
+        showErrorMsg('更新题目失败');
     } finally {
         // 恢复按钮状态
         saveBtn.disabled = false;

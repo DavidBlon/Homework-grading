@@ -22,7 +22,9 @@ async function checkAdminAuth() {
                 console.log('🔑 isAdmin 值:', result.data.isAdmin);
                 
                 if (!result.data.isAdmin) {
-                    alert('无权限访问！仅管理员可进入审核中心。');
+                    if (window.showError) {
+                        window.showError('无权限访问！仅管理员可进入审核中心。');
+                    }
                     window.location.href = 'index.html';
                     return false;
                 }
@@ -33,12 +35,16 @@ async function checkAdminAuth() {
         }
         
         // 未登录或权限不足
-        alert('请先登录管理员账户');
+        if (window.showError) {
+            window.showError('请先登录管理员账户');
+        }
         window.location.href = 'login.html';
         return false;
     } catch (error) {
         console.error('检查权限错误:', error);
-        alert('检查权限失败，请重新登录');
+        if (window.showError) {
+            window.showError('检查权限失败，请重新登录');
+        }
         window.location.href = 'login.html';
         return false;
     }
@@ -58,7 +64,9 @@ async function loadPendingOrders() {
                 updateStats(result.data, result.stats || {});
             }
         } else if (response.status === 403) {
-            alert('无权限访问！仅管理员可查看待审核订单。');
+            if (window.showError) {
+                window.showError('无权限访问！仅管理员可查看待审核订单。');
+            }
             window.location.href = 'index.html';
         }
     } catch (error) {
@@ -235,16 +243,22 @@ document.getElementById('confirmBtn').addEventListener('click', async function()
         const result = await response.json();
 
         if (result.success) {
-            alert(currentAction === 'approve' ? '✅ 订单审核通过，余额已到账！' : '❌ 订单已拒绝');
+            if (window.showSuccess) {
+                window.showSuccess(currentAction === 'approve' ? '✅ 订单审核通过，余额已到账！' : '❌ 订单已拒绝');
+            }
             closeModal();
             // 重新加载订单列表
             await loadPendingOrders();
         } else {
-            alert('操作失败：' + result.message);
+            if (window.showError) {
+                window.showError('操作失败：' + result.message);
+            }
         }
     } catch (error) {
         console.error('审核订单错误:', error);
-        alert('操作失败，请重试');
+        if (window.showError) {
+            window.showError('操作失败，请重试');
+        }
     }
 });
 

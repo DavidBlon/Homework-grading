@@ -7,7 +7,8 @@
 
 html {
     height: 100%;
-    background: #ffffff !important;
+    background: url('bg.jpg') no-repeat center center fixed !important;
+    background-size: cover !important;
 }
 
 body {
@@ -15,7 +16,7 @@ body {
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     overflow: hidden;
     min-height: 100vh;
-    background: #ffffff !important;
+    background: transparent !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
@@ -34,7 +35,7 @@ body {
     justify-content: center;
     z-index: 9999;
     transition: opacity 0.6s ease-out;
-    background: #ffffff;
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .splash-container.fade-out {
@@ -58,13 +59,17 @@ body {
 
 /* Logo包装器 */
 .logo-wrapper {
-    opacity: 0;
-    transform: scale(0.8) translateY(20px);
-    animation: logoEnter 0.5s ease-out 0.1s forwards;
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    animation: logoEnter 0.5s ease-out forwards;
 }
 
 @keyframes logoEnter {
-    to {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    100% {
         opacity: 1;
         transform: scale(1) translateY(0);
     }
@@ -74,7 +79,7 @@ body {
 .splash-logo {
     width: 180px;
     height: auto;
-    filter: drop-shadow(0 4px 12px rgba(66, 133, 244, 0.2));
+    filter: drop-shadow(0 8px 32px rgba(255, 255, 255, 0.3));
 }
 
 /* Google四色加载点动画 */
@@ -92,22 +97,22 @@ body {
 }
 
 .google-dot:nth-child(1) {
-    background: #4285f4;
+    background: #60a5fa;
     animation-delay: 0s;
 }
 
 .google-dot:nth-child(2) {
-    background: #ea4335;
+    background: #a78bfa;
     animation-delay: 0.2s;
 }
 
 .google-dot:nth-child(3) {
-    background: #fbbc05;
+    background: #f472b6;
     animation-delay: 0.4s;
 }
 
 .google-dot:nth-child(4) {
-    background: #34a853;
+    background: #818cf8;
     animation-delay: 0.6s;
 }
 
@@ -122,26 +127,28 @@ body {
     }
 }
 
-/* Logo路径样式 - Google风格 */
+/* Logo路径样式 - 蓝紫色风格 */
 .letter-d {
-    fill: #4285f4;
-    stroke: none;
+    fill: url(#gradientD);
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 1;
 }
 
 .letter-b {
-    fill: #34a853;
-    stroke: none;
+    fill: url(#gradientB);
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 1;
 }
 
 .pencil-icon,
 .pencil-line {
-    stroke: #ea4335;
+    stroke: rgba(96, 165, 250, 0.9);
     fill: none;
 }
 
 .chip-rect,
 .chip-line {
-    stroke: #fbbc05;
+    stroke: rgba(139, 92, 246, 0.8);
     fill: none;
 }
 
@@ -160,32 +167,70 @@ body {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 进度条外框 - Google风格 */
+/* 进度条外框 - 蓝紫色风格 */
 .progress-bar {
     width: 100%;
-    height: 4px;
-    background: #e8eaed;
-    border-radius: 2px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
     overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 2px 10px rgba(0, 0, 0, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.1);
 }
 
-/* 进度条填充 - Google四色渐变 */
+/* 进度条填充 - 蓝紫色渐变 */
 .progress-fill {
     height: 100%;
     width: 0%;
     background: linear-gradient(90deg, 
-        #4285f4 0%, 
-        #ea4335 33%,
-        #fbbc05 66%,
-        #34a853 100%
+        #60a5fa 0%, 
+        #a78bfa 50%,
+        #f472b6 100%
     );
-    border-radius: 2px;
+    border-radius: 3px;
     transition: width 0.1s ease-out;
+    box-shadow: 0 0 15px rgba(96, 165, 250, 0.5);
 }
 
 /* 完成状态 */
 .progress-wrapper.complete .progress-fill {
-    background: #34a853;
+    background: linear-gradient(90deg, 
+        #34d399 0%, 
+        #60a5fa 100%
+    );
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.6);
+}
+
+/* 星星闪烁动画 */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.4; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes twinkle2 {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.7); }
+}
+
+@keyframes shootingStar {
+    0% { opacity: 1; transform: translateX(0) translateY(0); }
+    100% { opacity: 0; transform: translateX(20px) translateY(10px); }
+}
+
+.star-1 { animation: twinkle 2s ease-in-out infinite; }
+.star-2 { animation: twinkle 2.5s ease-in-out infinite 0.3s; }
+.star-3 { animation: twinkle2 3s ease-in-out infinite 0.5s; }
+.star-4 { animation: twinkle 2.2s ease-in-out infinite 0.8s; }
+.star-5 { animation: twinkle2 2.8s ease-in-out infinite 1s; }
+.star-6 { animation: twinkle 2.3s ease-in-out infinite 0.2s; }
+.star-7 { animation: twinkle2 2.7s ease-in-out infinite 0.6s; }
+.star-8 { animation: twinkle 3.2s ease-in-out infinite 0.4s; }
+
+.shooting-star {
+    animation: shootingStar 3s ease-in-out infinite;
+    transform-origin: left center;
 }
 
 /* 移动端适配 */

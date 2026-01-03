@@ -2,6 +2,69 @@
 
 const AUTH_API_BASE = '/api/auth';
 
+// ================================
+// Toast 提示系统
+// ================================
+
+// 创建Toast容器
+function getToastContainer() {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    return container;
+}
+
+// 显示Toast提示
+function showToast(message, type = 'info', duration = 3000) {
+    const container = getToastContainer();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    
+    container.appendChild(toast);
+    
+    // 自动消失
+    setTimeout(() => {
+        toast.classList.add('toast-out');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, duration);
+    
+    return toast;
+}
+
+// 快捷方法
+function showSuccess(message, duration = 3000) {
+    return showToast(message, 'success', duration);
+}
+
+function showError(message, duration = 4000) {
+    return showToast(message, 'error', duration);
+}
+
+function showWarning(message, duration = 3500) {
+    return showToast(message, 'warning', duration);
+}
+
+function showInfo(message, duration = 3000) {
+    return showToast(message, 'info', duration);
+}
+
+// 全局暴露
+window.showToast = showToast;
+window.showSuccess = showSuccess;
+window.showError = showError;
+window.showWarning = showWarning;
+window.showInfo = showInfo;
+
 // 更新页头用户信息
 async function updateHeaderUserInfo() {
     try {

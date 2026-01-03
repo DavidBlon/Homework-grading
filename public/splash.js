@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 动画时间配置 (毫秒)
     const TIMING = {
-        showContent: 1200,      // Logo展示时间
+        showContent: 1800,      // Logo展示时间（1.2秒可见 + 动画缓冲）
         collapseContent: 150,   // 内容收缩动画
         progressDuration: 500,  // 进度条填充时间
         completeDelay: 50,      // 完成后等待

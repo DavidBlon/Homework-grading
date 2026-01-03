@@ -35,26 +35,26 @@ async function loadQuestions() {
                 questionSelect.appendChild(option);
             });
         } else {
-            showError('加载题目列表失败: ' + result.message);
+            showErrorMsg('加载题目列表失败: ' + result.message);
         }
     } catch (error) {
         console.error('加载题目列表错误:', error);
-        showError('加载题目列表失败，请刷新页面重试');
+        showErrorMsg('加载题目列表失败，请刷新页面重试');
     }
 }
 
-// 显示错误消息
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-    setTimeout(() => {
-        errorMessage.style.display = 'none';
-    }, 5000);
+// 显示错误消息 - 使用全局Toast
+function showErrorMsg(message) {
+    if (typeof window.showError === 'function') {
+        window.showError(message);
+    } else {
+        console.error(message);
+    }
 }
 
 // 隐藏错误消息
 function hideError() {
-    errorMessage.style.display = 'none';
+    // Toast自动消失
 }
 
 // 图片预览
@@ -83,23 +83,23 @@ submitForm.addEventListener('submit', async function(e) {
 
     // 验证
     if (!questionId) {
-        showError('请选择题目');
+        showErrorMsg('请选择题目');
         return;
     }
 
     if (!studentName.trim()) {
-        showError('请输入学生姓名');
+        showErrorMsg('请输入学生姓名');
         return;
     }
 
     if (!image || image.size === 0) {
-        showError('请选择图片文件');
+        showErrorMsg('请选择图片文件');
         return;
     }
 
     // 检查文件大小（5MB）
     if (image.size > 5 * 1024 * 1024) {
-        showError('图片大小不能超过 5MB');
+        showErrorMsg('图片大小不能超过 5MB');
         return;
     }
 
@@ -123,11 +123,11 @@ submitForm.addEventListener('submit', async function(e) {
             submitForm.style.display = 'none';
             resultSection.style.display = 'block';
         } else {
-            showError(result.message || '提交失败，请重试');
+            showErrorMsg(result.message || '提交失败，请重试');
         }
     } catch (error) {
         console.error('提交错误:', error);
-        showError('网络错误，请检查连接后重试');
+        showErrorMsg('网络错误，请检查连接后重试');
     } finally {
         // 恢复按钮状态
         submitBtn.disabled = false;
@@ -219,13 +219,13 @@ addQuestionForm.addEventListener('submit', async function(e) {
 
     // 验证
     if (!questionContent || !questionType || !questionMaxScore || !standardAnswer || !scoringRubric) {
-        showError('请填写所有必填项');
+        showErrorMsg('请填写所有必填项');
         return;
     }
 
     const maxScore = parseInt(questionMaxScore, 10);
     if (isNaN(maxScore) || maxScore <= 0) {
-        showError('满分必须是大于0的数字');
+        showErrorMsg('满分必须是大于0的数字');
         return;
     }
 
@@ -260,14 +260,16 @@ addQuestionForm.addEventListener('submit', async function(e) {
             // 重新加载题目列表
             await loadQuestions();
             
-            // 显示成功消息（可以优化为更好的提示）
-            alert('题目添加成功！');
+            // 显示成功消息
+            if (window.showSuccess) {
+                window.showSuccess('题目添加成功！');
+            }
         } else {
-            showError(result.message || '添加题目失败，请重试');
+            showErrorMsg(result.message || '添加题目失败，请重试');
         }
     } catch (error) {
         console.error('添加题目错误:', error);
-        showError('网络错误，请检查连接后重试');
+        showErrorMsg('网络错误，请检查连接后重试');
     } finally {
         // 恢复按钮状态
         addQuestionBtn.disabled = false;
