@@ -57,6 +57,7 @@ async function main() {
 main()
   .catch((e) => {
     console.error('初始化管理员失败:', e);
+    process.exit(1);  // ← 添加这一行
   })
   .finally(async () => {
     await prisma.$disconnect();
