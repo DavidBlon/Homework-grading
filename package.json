@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node src/server.ts",
     "build": "tsc",
-    "start": "prisma db push && node scripts/init-admin.js && node dist/server.js",
+    "start": "prisma generate && prisma db push && node scripts/init-admin.js && node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
