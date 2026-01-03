@@ -137,7 +137,7 @@ Form Data:
 
 ```env
 # 数据库配置
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="file:./prisma/dev.db"
 
 # 百度 OCR 配置
 BAIDU_APP_ID="your_app_id"
@@ -219,6 +219,7 @@ homework-grading/
 - 添加更多题目到数据库
 - 查看历史提交记录（可以通过 Prisma Studio 查看数据库）
 - 根据需要调整评分标准和 Prompt
+
 
 
 
