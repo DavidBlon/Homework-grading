@@ -461,6 +461,15 @@ async function loadQuota() {
                 const freeQuota = document.getElementById('freeQuota');
                 const balance = document.getElementById('balance');
 
+                // 如果额度显示元素不存在，只检查额度是否足够，不显示额度信息
+                if (!quotaBanner || !freeQuota || !balance) {
+                    // 如果额度不足，显示警告
+                    if (!data.canUse) {
+                        showError(`额度不足！今日免费额度已用完，余额不足 ${data.pricePerUse} 元/次，请充值后使用`);
+                    }
+                    return;
+                }
+
                 console.log('🎯 获取到的元素:', { quotaBanner, freeQuota, balance });
 
                 // 检查是否为测试账户
