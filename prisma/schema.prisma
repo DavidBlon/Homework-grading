@@ -16,7 +16,7 @@ model User {
   password        String    // 密码（应该存储哈希值）
   role            String    // 'student' or 'teacher'
   isAdmin         Boolean   @default(false) // 是否为管理员（可以审核订单）
-  dailyQuota      Int       @default(5) // 每日免费额度
+  dailyQuota      Int       @default(50) // 每日免费额度
   quotaUsedToday  Int       @default(0) // 今日已使用次数
   lastResetDate   DateTime  @default(now()) // 上次重置日期
   balance         Float     @default(0) // 余额（元）
