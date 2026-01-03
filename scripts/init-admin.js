@@ -54,11 +54,15 @@ async function main() {
   }
 }
 
-main()
-  .catch((e) => {
+(async () => {
+  try {
+    await main();
+    console.log('✅ 初始化完成');
+  } catch (e) {
     console.error('初始化管理员失败:', e);
-    process.exit(1);  // ← 添加这一行
-  })
-  .finally(async () => {
+    process.exit(1);
+  } finally {
     await prisma.$disconnect();
-  });
+    process.exit(0);
+  }
+})();
