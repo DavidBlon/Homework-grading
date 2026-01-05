@@ -1,6 +1,7 @@
 FROM node:18
 LABEL "language"="nodejs"
 LABEL "framework"="express"
+<<<<<<< HEAD
 
 WORKDIR /src
 
@@ -27,3 +28,13 @@ EXPOSE 8080
 
 # 启动命令
 CMD ["npm", "start"]
+=======
+WORKDIR /src
+RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN npm install
+RUN npm run build
+RUN npm run prisma:generate
+EXPOSE 8080
+CMD ["npm", "start"]
+>>>>>>> 37e102a2ff5928dac0832878fb015f5bb403f9a2
