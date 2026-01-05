@@ -1,0 +1,16 @@
+Role: Senior Node.js Backend Engineer
+Tech Stack: Node.js (v18+), Express, TypeScript, SQLite (via Prisma), Multer.
+
+General Rules:
+1.  **Portability First**: Do not rely on system-level dependencies. Use SQLite for the database.
+2.  **Architecture**: Use a Controller-Service-Repository pattern.
+    - `src/controllers`: Handle HTTP requests and responses.
+    - `src/services`: Business logic (OCR, Grading, File handling).
+    - `src/utils`: Helper functions.
+3.  **Type Safety**: Strict TypeScript usage. No `any` unless absolutely necessary.
+4.  **Error Handling**: Use a global error handler middleware.
+5.  **Env**: Use `dotenv` for configuration.
+
+Specifics:
+- Use `fs/promises` for file operations.
+- All API responses should follow a standard JSON structure: `{ success: boolean, data: any, message: string }`.

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>批改记录 - 智能作业批改系统</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 毛璃璃页头 -->
+    <header class="glass-header">
+        <div class="header-content">
+            <button class="back-btn" onclick="history.back()">
+                <span>← 返回</span>
+            </button>
+            <div class="header-title">
+                <h1>📊 批改记录</h1>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="usernameDisplay"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- 记录列表 -->
+            <section class="card">
+                <h2 class="section-title">📋 最近记录</h2>
+                <div id="historyList" class="history-list">
+                    <!-- 记录将通过JS动态加载 -->
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <p class="empty-text">暂无批改记录</p>
+                        <p class="empty-hint">提交作业后，批改记录将显示在这里</p>
+                        <a href="submit.html" class="btn btn-primary" style="margin-top: 1rem;">去批改作业</a>
+                    </div>
+                </div>
+                
+                <!-- 分页导航 -->
+                <div id="pagination" class="pagination" style="display: none;">
+                    <button class="page-btn" id="prevPage">← 上一页</button>
+                    <span class="page-info" id="pageInfo">1 / 1</span>
+                    <button class="page-btn" id="nextPage">下一页 →</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- 移动端底部导航栏 -->
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">首页</span>
+            </a>
+            <a href="submit.html" class="nav-item">
+                <span class="nav-icon">📝</span>
+                <span class="nav-label">提交</span>
+            </a>
+            <a href="add-question.html" class="nav-item teacher-only" style="display: none;">
+                <span class="nav-icon">➕</span>
+                <span class="nav-label">添加</span>
+            </a>
+            <a href="manage-questions.html" class="nav-item teacher-only" style="display: none;">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">管理</span>
+            </a>
+            <a href="recharge.html" class="nav-item">
+                <span class="nav-icon">💰</span>
+                <span class="nav-label">充值</span>
+            </a>
+        </nav>
+    </div>
+
+    <script src="header-utils.js"></script>
+    <script>
+        // API 基础 URL
+        const API_BASE = '/api/auth';
+        let currentUser = null;
+
+        // 检查登录状态
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/me`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        currentUser = result.data;
+                        displayUserInfo();
+                        await loadHistory();
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                } else {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('检查登录状态错误:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 显示用户信息
+        function displayUserInfo() {
+            if (currentUser) {
+                const roleText = currentUser.role === 'teacher' ? '教师' : '学生';
+                document.getElementById('usernameDisplay').textContent = `${currentUser.username} (${roleText})`;
+                document.getElementById('userInfo').style.display = 'flex';
+                
+                // 更新移动端导航栏（教师显示额外按钮）
+                updateMobileNav();
+            }
+        }
+
+        // 更新移动端导航栏
+        function updateMobileNav() {
+            const teacherOnlyItems = document.querySelectorAll('.mobile-nav .teacher-only');
+            if (currentUser && currentUser.role === 'teacher') {
+                teacherOnlyItems.forEach(item => {
+                    item.style.display = 'flex';
+                });
+            } else {
+                teacherOnlyItems.forEach(item => {
+                    item.style.display = 'none';
+                });
+            }
+        }
+
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        // 分页配置
+        const PAGE_SIZE = 3;
+        let allRecords = [];
+        let currentPage = 1;
+        let totalPages = 1;
+
+        // 加载批改记录
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/exam/history', {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    allRecords = data.records || [];
+                    totalPages = Math.ceil(allRecords.length / PAGE_SIZE);
+                    currentPage = 1;
+                    renderCurrentPage();
+                } else {
+                    console.log('暂无批改记录');
+                }
+            } catch (error) {
+                console.log('加载记录失败:', error);
+            }
+        }
+
+        // 渲染当前页
+        function renderCurrentPage() {
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const end = start + PAGE_SIZE;
+            const pageRecords = allRecords.slice(start, end);
+            
+            renderHistory(pageRecords);
+            updatePagination();
+        }
+
+        // 更新分页导航
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            const pageInfo = document.getElementById('pageInfo');
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+
+            // 始终显示分页导航
+            pagination.style.display = 'flex';
+            pageInfo.textContent = `${currentPage} / ${totalPages || 1}`;
+            
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages || totalPages <= 1;
+        }
+
+        // 分页按钮事件
+        document.getElementById('prevPage').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderCurrentPage();
+            }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderCurrentPage();
+            }
+        });
+
+        // 渲染历史记录
+        function renderHistory(records) {
+            const listEl = document.getElementById('historyList');
+            
+            if (!records || records.length === 0) {
+                return; // 保持空状态显示
+            }
+
+            listEl.innerHTML = records.map(record => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div class="history-title">${record.questionTitle || '作业批改'}</div>
+                        <div class="history-time">${record.studentName ? record.studentName + ' · ' : ''}${formatTime(record.createdAt)}</div>
+                    </div>
+                    <div class="history-score ${getScoreClass(record.score)}">
+                        ${record.score}分
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 格式化时间
+        function formatTime(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return '刚刚';
+            if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
+            
+            return date.toLocaleDateString('zh-CN', {
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // 获取分数样式类
+        function getScoreClass(score) {
+            if (score >= 90) return 'score-excellent';
+            if (score >= 70) return 'score-good';
+            if (score >= 60) return 'score-pass';
+            return 'score-fail';
+        }
+    </script>
+</body>
+</html>

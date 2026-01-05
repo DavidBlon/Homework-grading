@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员审核 - 智能作业批改系统</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 毛玻璃页头 -->
+    <header class="glass-header">
+        <div class="header-content">
+            <a href="index.html" class="back-btn">
+                <span>← 返回首页</span>
+            </a>
+            <div class="header-title">
+                <h1>🔐 管理员审核中心</h1>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="usernameDisplay"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 统计信息卡片 -->
+        <div class="stats-container">
+            <div class="stat-card stat-card-warning">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-info">
+                    <div class="stat-label">待审核订单</div>
+                    <div class="stat-value" id="pendingCount">-</div>
+                </div>
+            </div>
+            <div class="stat-card stat-card-success">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <div class="stat-label">今日已审核</div>
+                    <div class="stat-value" id="todayApproved">-</div>
+                </div>
+            </div>
+            <div class="stat-card stat-card-primary">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <div class="stat-label">总审核金额</div>
+                    <div class="stat-value" id="totalAmount">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 待审核订单列表 -->
+        <section class="card">
+            <h2 style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>⏳</span>
+                <span>待审核订单</span>
+            </h2>
+            <div id="pendingOrders">
+                <p style="text-align: center; color: #64748b; padding: 2rem;">加载中...</p>
+            </div>
+        </section>
+
+        <!-- 审核确认对话框 -->
+        <div class="modal" id="confirmModal" style="display: none;">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3 id="modalTitle">确认操作</h3>
+                    <button class="modal-close" onclick="closeModal()">×</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <p>确认要执行此操作吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" id="confirmBtn">确认</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2026 智能作业批改系统 | Powered by DB科技</p>
+        </footer>
+    </div>
+
+    <script src="header-utils.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
