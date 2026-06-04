@@ -1,37 +1,78 @@
 import dotenv from 'dotenv';
-import OpenAI from 'openai';
+import axios from 'axios';
 import { promises as fs } from 'fs';
+import path from 'path';
 
-// 加载环境变量（确保在模块加载时可用）
+// 加载环境变量
 dotenv.config();
 
-// 千问 VL OCR 配置
-const DASHSCOPE_API_KEY = process.env.DASHSCOPE_API_KEY || '';
-const DASHSCOPE_BASE_URL = process.env.DASHSCOPE_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1';
-const DASHSCOPE_MODEL = process.env.DASHSCOPE_MODEL || 'qwen-vl-max';
+// 百度 OCR 配置
+const BAIDU_APP_ID = process.env.BAIDU_APP_ID || '';
+const BAIDU_API_KEY = process.env.BAIDU_API_KEY || '';
+const BAIDU_SECRET_KEY = process.env.BAIDU_SECRET_KEY || '';
 
-// 调试日志：检查环境变量
-console.log('[OCR Service] DASHSCOPE_API_KEY:', DASHSCOPE_API_KEY ? `${DASHSCOPE_API_KEY.substring(0, 10)}...` : '未配置');
-console.log('[OCR Service] DASHSCOPE_BASE_URL:', DASHSCOPE_BASE_URL);
-console.log('[OCR Service] DASHSCOPE_MODEL:', DASHSCOPE_MODEL);
+// 百度 OCR 接口地址
+const BAIDU_TOKEN_URL = 'https://aip.baidubce.com/oauth/2.0/token';
+const BAIDU_OCR_URL = 'https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic';
 
-// 初始化千问客户端
-const client = new OpenAI({
-  apiKey: DASHSCOPE_API_KEY,
-  baseURL: DASHSCOPE_BASE_URL,
-});
+// 调试日志
+console.log('[OCR Service] 使用百度 OCR');
+console.log('[OCR Service] BAIDU_APP_ID:', BAIDU_APP_ID ? `${BAIDU_APP_ID.substring(0, 5)}...` : '未配置');
+console.log('[OCR Service] BAIDU_API_KEY:', BAIDU_API_KEY ? `${BAIDU_API_KEY.substring(0, 5)}...` : '未配置');
+
+// Token 缓存（避免每次请求都重新获取）
+let cachedToken: string | null = null;
+let tokenExpireTime = 0;
 
 /**
- * 将图片文件转换为 Base64 数据 URL
- * @param imagePath 图片文件路径
- * @returns Base64 数据 URL（包含 data:image/jpeg;base64, 前缀）
+ * 获取百度 OCR 的 access_token
+ * 百度 token 有效期约 30 天，这里做简单缓存
  */
-async function imageToDataURL(imagePath: string): Promise<string> {
+async function getAccessToken(): Promise<string> {
+  const now = Date.now();
+
+  // 如果缓存未过期，直接返回
+  if (cachedToken && now < tokenExpireTime) {
+    return cachedToken;
+  }
+
+  try {
+    const response = await axios.post(BAIDU_TOKEN_URL, null, {
+      params: {
+        grant_type: 'client_credentials',
+        client_id: BAIDU_API_KEY,
+        client_secret: BAIDU_SECRET_KEY,
+      },
+    });
+
+    const data = response.data;
+    if (!data.access_token) {
+      throw new Error(`获取 token 失败: ${JSON.stringify(data)}`);
+    }
+
+    // 缓存 token，提前 1 小时过期以确保安全
+    cachedToken = data.access_token as string;
+    tokenExpireTime = now + (data.expires_in - 3600) * 1000;
+
+    console.log('[OCR Service] 百度 access_token 获取成功');
+    return cachedToken!;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`获取百度 access_token 失败: ${error.response?.data?.error_description || error.message}`);
+    }
+    throw error;
+  }
+}
+
+/**
+ * 将图片文件转换为 Base64 字符串
+ * @param imagePath 图片文件路径
+ * @returns Base64 编码的图片内容
+ */
+async function imageToBase64(imagePath: string): Promise<string> {
   try {
     const imageBuffer = await fs.readFile(imagePath);
-    const base64String = imageBuffer.toString('base64');
-    // 假设图片为jpeg格式，如果需要支持多种格式，可以根据文件扩展名判断
-    return `data:image/jpeg;base64,${base64String}`;
+    return imageBuffer.toString('base64');
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`读取图片文件失败: ${error.message}`);
@@ -41,47 +82,48 @@ async function imageToDataURL(imagePath: string): Promise<string> {
 }
 
 /**
- * 识别图片中的文字（使用千问 VL 视觉大模型）
+ * 识别图片中的文字（使用百度 OCR 精确识别）
  * @param imagePath 图片文件路径
  * @returns 识别出的文字内容
  */
 export async function recognizeText(imagePath: string): Promise<string> {
   try {
     // 验证配置
-    if (!DASHSCOPE_API_KEY) {
-      throw new Error('千问 OCR 配置不完整，请检查 .env 文件中的 DASHSCOPE_API_KEY');
+    if (!BAIDU_API_KEY || !BAIDU_SECRET_KEY) {
+      throw new Error('百度 OCR 配置不完整，请检查 .env 文件中的 BAIDU_API_KEY 和 BAIDU_SECRET_KEY');
     }
 
-    // 1. 将图片转换为 Base64 数据 URL
-    const imageDataURL = await imageToDataURL(imagePath);
+    // 1. 获取 access_token
+    const accessToken = await getAccessToken();
 
-    // 2. 调用千问 VL API
-    const completion = await client.chat.completions.create({
-      model: DASHSCOPE_MODEL,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'image_url',
-              image_url: { url: imageDataURL }
-            },
-            {
-              type: 'text',
-              text: '请识别这张图片中的所有文字内容，包括手写字和印刷体。请直接输出识别结果，不要添加额外说明。保持原有的段落结构和换行。'
-            }
-          ]
-        }
-      ],
-      temperature: 0.1, // 降低随机性，提高识别稳定性
+    // 2. 将图片转换为 Base64
+    const imageBase64 = await imageToBase64(imagePath);
+
+    // 3. 调用百度 OCR API（精确识别）
+    const response = await axios.post(`${BAIDU_OCR_URL}?access_token=${accessToken}`, {
+      image: imageBase64,
+    }, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     });
 
-    // 3. 提取识别结果
-    const text = completion.choices[0]?.message?.content;
-    
-    if (!text || text.trim() === '') {
+    const data = response.data;
+
+    if (data.error_code) {
+      throw new Error(`百度 OCR 错误: ${data.error_msg} (code: ${data.error_code})`);
+    }
+
+    // 4. 提取识别结果
+    const words = data.words_result || [];
+    if (words.length === 0) {
       throw new Error('未识别到任何文字');
     }
+
+    // 将所有文字按行拼接
+    const text = words
+      .map((item: { words: string }) => item.words)
+      .join('\n');
 
     return text.trim();
   } catch (error) {
